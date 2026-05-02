@@ -1,0 +1,643 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   SAHİR - GÜNCELLENMİŞ VARSAYILAN TEMA (MIDNIGHT & AMBER)
+   ============================================================ */
+
+:root, html[data-theme="default"] {
+  /* Arka plan: Daha derin, mat bir gece mavisi */
+  --bg-main: #020617;        
+  /* Kartlar: İçerideki derinliği hissettiren hafif açık ton */
+  --bg-card: #0f172a;        
+  /* Metinler: Saf beyaz yerine göz yormayan inci beyazı */
+  --text-main: #f8fafc;      
+  /* Aksan Rengi: Kehribar Sarısı (Logonun en canlı yeri) */
+  --accent: #fbbf24;         
+  /* Yardımcı Renk: Gümüşümsü mavi */
+  --text-muted: #94a3b8;     
+  /* Border: Çok ince, lüks hissettiren buzlu cam sınırı */
+  --border: rgba(148, 163, 184, 0.1);
+}
+
+html[data-theme="default"] body {
+  background-color: var(--bg-main) !important;
+  color: var(--text-main) !important;
+  /* Arka plandaki ışıma efektini biraz daha yumuşatıp genişletiyoruz */
+  background-image: 
+    radial-gradient(circle at 50% -20%, rgba(251, 191, 36, 0.08) 0%, transparent 70%),
+    radial-gradient(circle at 0% 0%, rgba(30, 41, 59, 0.5) 0%, transparent 50%) !important;
+  background-attachment: fixed;
+}
+
+/* Header Tasarımı: Daha şeffaf ve şık */
+html[data-theme="default"] header {
+  background-color: rgba(2, 6, 23, 0.75) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(251, 191, 36, 0.15) !important;
+}
+/* Linklerin üzerine gelince altın sarısı bir parlama */
+html[data-theme="default"] nav a:hover {
+  color: var(--accent) !important;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+  transition: all 0.3s ease;
+}
+
+/* Kayıt Ol butonu gibi aksan butonlar */
+html[data-theme="default"] .bg-accent {
+  background-color: var(--accent) !important;
+  color: #020617 !important; /* Koyu lacivert yazı */
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.2) !important;
+}
+
+html[data-theme="default"] .bg-accent:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 20px rgba(251, 191, 36, 0.4) !important;
+}
+.star {
+  position: absolute;
+  background-color: #f9c74f; /* Logonun altın sarısı */
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  opacity: 0;
+  aspect-ratio: 1 / 1;
+  /* Büyük yıldızlarda parlamayı daha geniş yayıyoruz */
+  filter: drop-shadow(0 0 8px rgba(249, 199, 79, 0.8));
+  animation: star-pulsate infinite ease-in-out;
+}
+
+@keyframes star-pulsate {
+  0%, 100% { 
+    opacity: 0; 
+    transform: scale(0.4) rotate(-5deg);
+    filter: drop-shadow(0 0 2px #f9c74f);
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.2) rotate(15deg); /* Daha büyük bir patlama hissi */
+    filter: drop-shadow(0 0 15px #f9c74f) drop-shadow(0 0 30px rgba(249, 199, 79, 0.4));
+  }
+}
+/* ============================================================
+   SAHİR - GÖRSELLİ VE GERÇEKÇİ KIŞ TEMASI (YENİ)
+   ============================================================ */
+
+/* 1. Arka Plan (Karlı Orman Resmi) */
+html[data-theme="christmas"] body {
+  
+  background: 
+    linear-gradient(to bottom, rgba(11, 15, 25, 0.8), rgba(20, 35, 60, 0.4)),
+    url('/winter-bg.jpg'); /* Resmin adını public klasöründekiyle aynı yap! */
+  
+  background-size: cover; /* Resmi ekranın tamamına yayar */
+  background-position: center bottom; /* Dağları ve ağaçları hizalar */
+  background-attachment: fixed; /* Sayfa kaydırılsa bile resim sabit kalır */
+  background-repeat: no-repeat;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   2. RENK VURGULARI VE BUTONLAR
+   ============================================================ */
+
+/* Ana Yazı Vurguları (Altın Sarısı) */
+html[data-theme="christmas"] .text-accent  { color: #d4af37 !important; }
+
+/* ANA BUTONLAR (Tema seçme butonu vb.) - Çam Yeşili Yaptık */
+html[data-theme="christmas"] .bg-accent    { 
+  background-color: #228B22 !important; 
+  color: #ffffff !important; 
+  border: 1px solid #1a6b1a !important;
+}
+
+html[data-theme="christmas"] .border-accent{ border-color: #228B22 !important; }
+
+/* İkincil Butonlar (Altın Sarısı / Gold) */
+html[data-theme="christmas"] .text-accent2 { color: #d4af37 !important; }
+html[data-theme="christmas"] .bg-accent2   { 
+  background-color: #d4af37 !important; 
+  color: #111111 !important; /* Üzerindeki yazı okunsun diye koyu renk */
+}
+html[data-theme="christmas"] .border-accent2{ border-color: #d4af37 !important; }
+
+
+/* SADECE ÜST MENÜDEKİ (HEADER) BUTONLARA ÖZEL ŞIKLIK EKLEME (İsteğe Bağlı) */
+html[data-theme="christmas"] header button {
+  background-color: #228B22 !important; /* Butonu yeşil yapar */
+  color: #fff !important;
+  border: 1px solid #d4af37 !important; /* Etrafına ince altın sarısı çerçeve */
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+html[data-theme="christmas"] header button:hover {
+  background-color: #d4af37 !important; /* Üzerine gelince Altın Sarısı parlasın */
+  color: #111 !important;
+  transform: scale(1.05); /* Üzerine gelince çok hafif büyüsün */
+}
+/* ============================================================
+   SAHİR - ÜST MENÜ (HEADER) NOEL TASARIMI
+   ============================================================ */
+html[data-theme="christmas"] header {
+  /* Şık, yarı şeffaf bir Noel Kırmızısı (Bordo tonu) */
+  background: rgba(120, 15, 25, 0.85) !important; 
+  
+  /* Alt kısma altın sarısı (gold) şık bir sınır çizgisi */
+  border-bottom: 2px solid #d4af37 !important; 
+  
+  /* Arka plandaki yağan karları menünün arkasından "buzlu cam" gibi gösterir */
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  
+  /* Menüdeki yazıların daha net okunması için çok hafif bir gölge */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+
+/* 3. KAR TANELERİ - Sağa Doğru Savrulanlar (Ana Katman) */
+html[data-theme="christmas"] body::before {
+  content: '❄ ❅ ❆ ❄ ❅ ❆ ❄ ❅ ❆ ❄ ❅ ❆';
+  position: fixed;
+  top: -35vh;
+  left: 0;
+  width: 100vw;
+  text-align: center;
+  pointer-events: none;
+  font-size: 2.2rem;
+  color: #ffffff; 
+  z-index: 9998;
+  filter: drop-shadow(15vw -30vh #f0f4f8) 
+          drop-shadow(-25vw -70vh #d1d9e0)
+          drop-shadow(35vw -110vh #ffffff);
+  /* Sağa doğru esen rüzgar animasyonu kullanılıyor */
+  animation: snow-fall-right 16s linear infinite;
+  white-space: nowrap;
+  letter-spacing: 14vw;
+}
+
+/* 4. YENİ KATMAN: KAR TANELERİ - Sola Doğru Savrulanlar (Arka Plan Karları) */
+html[data-theme="christmas"]::before {
+  content: '❆ ❄ ❅ ❆ ❄ ❅ ❆';
+  position: fixed;
+  top: -20vh;
+  left: 0;
+  width: 100vw;
+  text-align: center;
+  pointer-events: none;
+  /* Daha uzakta hissettirmesi için boyutları biraz daha küçük */
+  font-size: 1.6rem; 
+  color: #ffffff;
+  z-index: 9997;
+  filter: drop-shadow(20vw -40vh #d1d9e0) 
+          drop-shadow(-30vw -80vh #ffffff);
+  /* Sola doğru esen rüzgar animasyonu kullanılıyor */
+  animation: snow-fall-left 14s linear infinite;
+  white-space: nowrap;
+  letter-spacing: 18vw;
+}
+
+/* 5. SÜSLER - Sola Doğru Savrulanlar */
+html[data-theme="christmas"] body::after {
+  content: '🎄 🎁 ⭐ 🎄 🎁 ⭐ 🎄 🎁 ⭐';
+  position: fixed;
+  top: -40vh;
+  left: 0;
+  width: 100vw;
+  text-align: center;
+  pointer-events: none;
+  font-size: 2rem;
+  /* Süslerin kar birikintisinin arkasında kalması için z-index ayarı */
+  z-index: 9998;
+  filter: drop-shadow(-20vw -45vh rgba(255,255,255,0.1))
+          drop-shadow(25vw -95vh rgba(255,255,255,0.1))
+          drop-shadow(-10vw -145vh rgba(255,255,255,0.1));
+  /* Sola doğru esen rüzgar animasyonu kullanılıyor */
+  animation: snow-fall-left 22s linear infinite;
+  animation-delay: -5s;
+  white-space: nowrap;
+  letter-spacing: 22vw;
+}
+
+/* ============================================================
+   YENİ RÜZGAR YÖNLÜ ANİMASYONLAR
+   ============================================================ */
+
+/* Rüzgarla Sağa Doğru Çapraz Uçuş */
+@keyframes snow-fall-right {
+  0% { transform: translateY(0) translateX(-10vw) rotate(0deg); opacity: 1; }
+  50% { transform: translateY(60vh) translateX(10vw) rotate(15deg); }
+  100% { transform: translateY(130vh) translateX(30vw) rotate(30deg); opacity: 0.8; }
+}
+
+/* Rüzgarla Sola Doğru Çapraz Uçuş */
+@keyframes snow-fall-left {
+  0% { transform: translateY(0) translateX(10vw) rotate(0deg); opacity: 1; }
+  50% { transform: translateY(60vh) translateX(-10vw) rotate(-15deg); }
+  100% { transform: translateY(130vh) translateX(-30vw) rotate(-30deg); opacity: 0.8; }
+}
+/* ============================================================
+   SAHİR - HALLOWEEN GÖRSELLİ KORKU TEMASI
+   ============================================================ */
+
+html[data-theme="halloween"] body {
+  /* 
+    Fotoğrafın üzerine kan kırmızısı ve siyah bir filtre atıyoruz.
+    Bu sayede fotoğrafın çok parlak kısımları varsa bile siten okunabilir kalır.
+  */
+  background: 
+    linear-gradient(to bottom, rgba(10, 0, 0, 0.8), rgba(153, 27, 27, 0.3)),
+    url('/halloween1.png');
+  
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  overflow-x: hidden;
+}
+
+/* Yazı ve Buton Renkleri */
+/* Ana vurgu rengini de kırmızının en canlı tonuna çektik */
+html[data-theme="halloween"] .text-accent  { color: #ef4444 !important; } 
+html[data-theme="halloween"] .bg-accent    { background-color: #991b1b !important; color: #ffffff !important; }
+html[data-theme="halloween"] .border-accent{ border-color: #ef4444 !important; }
+
+/* ============================================================
+   HALLOWEEN TEMA BUTONU - KESİN ÇÖZÜM
+   ============================================================ */
+
+/* Butonu hem class hem de hiyerarşi ile çok güçlü şekilde hedefliyoruz */
+html[data-theme="halloween"] button.bg-accent,
+html[data-theme="halloween"] .bg-accent {
+  background-color: #991b1b !important; /* Kan Kırmızısı */
+  color: #ffffff !important;
+  border: 2px solid #ef4444 !important; /* Dış çerçeve daha belirgin kan kırmızısı */
+  box-shadow: 0 0 15px rgba(146, 13, 13, 0.841) !important;
+}
+
+/* Hover (Üzerine gelme) durumunda rengin değiştiğinden emin olalım */
+html[data-theme="halloween"] button.bg-accent:hover,
+html[data-theme="halloween"] .bg-accent:hover {
+  background-color: #7f1d1d !important; /* Üstüne gelince biraz daha koyulaşan kan rengi */
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.6) !important;
+  transform: translateY(-2px);
+}
+
+/* Vurgulu yazı rengi */
+html[data-theme="halloween"] .text-accent {
+  color: #ef4444 !important; /* Parlak Kan Kırmızısı */
+}
+/* ============================================================
+   SAHİR - HALLOWEEN ÇİFT YÖNLÜ YELPAZE YARASA SÜRÜSÜ
+   ============================================================ */
+
+/* ORTAK YARASA STİLİ */
+html[data-theme="halloween"] body::before,
+html[data-theme="halloween"] body::after {
+  content: '🦇 🦇 🦇';
+  position: fixed;
+  font-size: 5rem;
+  z-index: 9998;
+  pointer-events: none;
+  letter-spacing: 12vw;
+  filter: brightness(0) drop-shadow(0 0 20px rgba(153, 27, 27, 0.9));
+  /* HATA DÜZELTME: İlk açılışta donuk görünmemeleri için başlangıçta gizliyoruz */
+  opacity: 0; 
+}
+
+/* 1. GRUP: SAĞDAN SOLA UÇANLAR */
+html[data-theme="halloween"] body::before {
+  bottom: 5vh;
+  right: -50vw; /* Daha dışarıdan başlatarak donuk görüntüyü engelliyoruz */
+  animation: fly-to-left 8s ease-in-out infinite;
+}
+
+/* 2. GRUP: SOLDAN SAĞA UÇANLAR */
+html[data-theme="halloween"] body::after {
+  bottom: 10vh;
+  left: -50vw; /* Daha dışarıdan başlatarak donuk görüntüyü engelliyoruz */
+  animation: fly-to-right 9s ease-in-out infinite 2.5s;
+}
+
+/* --- ANİMASYONLAR --- */
+
+/* Sağa Bakıp Sola Uçanlar */
+@keyframes fly-to-left {
+  0% { 
+    transform: translate(0, 0) scaleX(1) rotate(10deg) scale(0.5); 
+    opacity: 0; 
+  }
+  /* Başlangıçta aniden belirmemesi için 5%'lik bir geçiş ekledik */
+  5% { opacity: 0; }
+  20% { opacity: 1; }
+  50% { transform: translate(-50vw, -40vh) scaleX(1) rotate(-10deg) scale(1.1); }
+  100% { transform: translate(-140vw, -80vh) scaleX(1) rotate(-20deg) scale(0.7); opacity: 0; }
+}
+
+/* Sola Bakıp Sağa Uçanlar */
+@keyframes fly-to-right {
+  0% { 
+    transform: translate(0, 0) scaleX(-1) rotate(-10deg) scale(0.5); 
+    opacity: 0; 
+  }
+  /* Başlangıçta aniden belirmemesi için 5%'lik bir geçiş ekledik */
+  5% { opacity: 0; }
+  20% { opacity: 1; }
+  50% { transform: translate(50vw, -50vh) scaleX(-1) rotate(10deg) scale(1.1); }
+  100% { transform: translate(140vw, -90vh) scaleX(-1) rotate(20deg) scale(0.7); opacity: 0; }
+}
+
+@keyframes bat-fly {
+  0%   { transform: translate(0, 0) rotate(-10deg); }
+  25%  { transform: translate(-30vw, 5vh) rotate(10deg); }
+  50%  { transform: translate(-60vw, -2vh) rotate(-5deg); }
+  75%  { transform: translate(-30vw, 8vh) rotate(15deg); }
+  100% { transform: translate(0, 0) rotate(-10deg); }
+}
+
+/* Mobilde dekoratif elemanları küçült */
+@media (max-width: 640px) {
+  html[data-theme="christmas"] body::before,
+  html[data-theme="christmas"] body::after { font-size: 0.9rem; }
+  html[data-theme="halloween"] body::before { font-size: 1.8rem; }
+  html[data-theme="halloween"] body::after  { font-size: 1.4rem; }
+}
+/* ============================================================
+   SAHİR - HALLOWEEN ÖZEL HEADER (TAM UYUM)
+   ============================================================ */
+
+/* 1. Ana Header Konteynırı */
+html[data-theme="halloween"] header {
+  background: rgba(5, 0, 0, 0.9) !important; /* Zift siyahı cam efekti */
+  backdrop-filter: blur(15px) !important;
+  border-bottom: 3px solid #991b1b !important; /* Kan kırmızısı kalın çizgi */
+  box-shadow: 0 4px 25px rgba(153, 27, 27, 0.3) !important;
+}
+
+/* 2. Logo (SAHIR Yazısı) */
+html[data-theme="halloween"] header .text-accent {
+  color: #ef4444 !important; /* Parlak Kan Kırmızısı */
+  text-shadow: 0 0 15px rgba(239, 68, 68, 0.8) !important;
+  font-weight: 900 !important;
+}
+
+/* 3. Navigasyon Linkleri (Anasayfa, Kategoriler vb.) */
+html[data-theme="halloween"] nav a {
+  color: #fca5a5 !important; /* Soluk kan rengi */
+  transition: all 0.3s ease !important;
+}
+
+html[data-theme="halloween"] nav a:hover {
+  color: #ffffff !important;
+  text-shadow: 0 0 10px #ef4444 !important;
+  transform: translateY(-1px);
+}
+
+/* 4. Arama Çubuğu (Ölü Gelin Esintili) */
+html[data-theme="halloween"] header input[type="search"] {
+  background: rgba(20, 0, 0, 0.6) !important;
+  border: 1px solid #7f1d1d !important;
+  color: #fca5a5 !important;
+  border-radius: 8px !important;
+  transition: all 0.4s ease !important;
+}
+
+html[data-theme="halloween"] header input[type="search"]:focus {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 15px rgba(153, 27, 27, 0.5) !important;
+  background: rgba(30, 0, 0, 0.8) !important;
+}
+
+/* 5. Butonlar (Giriş Yap, Kayıt Ol, Çıkış) */
+html[data-theme="halloween"] header .bg-accent {
+  background-color: #991b1b !important; /* Kayıt ol butonu kan kırmızısı */
+  color: white !important;
+  border: none !important;
+}
+
+html[data-theme="halloween"] header button, 
+html[data-theme="halloween"] header .border-border {
+  border-color: #7f1d1d !important;
+  color: #fca5a5 !important;
+}
+
+html[data-theme="halloween"] header button:hover {
+  background: rgba(153, 27, 27, 0.2) !important;
+  color: #ffffff !important;
+}
+
+/* 6. Kullanıcı Adı */
+html[data-theme="halloween"] header a[href="/profile"] {
+  color: #ef4444 !important;
+  font-weight: bold !important;
+}
+/* ============================================================
+   SAHİR - HALLOWEEN TEMA SEÇİCİ (BLOOD RED DROPDOWN)
+   ============================================================ */
+
+/* 1. Tema Değiştirme Butonunun Kendisi */
+html[data-theme="halloween"] .theme-switcher-btn, /* Eğer özel bir class varsa */
+html[data-theme="halloween"] [class*="ThemeSwitcher"] button {
+  background-color: #7f1d1d !important; /* Koyu Kan Kırmızısı */
+  color: white !important;
+  border: 1px solid #ef4444 !important; /* Parlak Kırmızı Kenarlık */
+  box-shadow: 0 0 10px rgba(153, 27, 27, 0.4) !important;
+  transition: all 0.3s ease !important;
+}
+
+html[data-theme="halloween"] [class*="ThemeSwitcher"] button:hover {
+  background-color: #991b1b !important;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.6) !important;
+  transform: scale(1.05);
+}
+
+/* 2. Tıklandığında Açılan Liste Kutusu */
+html[data-theme="halloween"] .theme-dropdown-container, 
+html[data-theme="halloween"] [class*="ThemeSwitcher"] ul,
+html[data-theme="halloween"] [class*="ThemeSwitcher"] div[role="menu"] {
+  background: rgba(15, 0, 0, 0.98) !important; /* Çok koyu siyah-kırmızı */
+  border: 2px solid #991b1b !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(153, 27, 27, 0.4) !important;
+  padding: 8px !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+/* 3. Liste İçindeki Tema Seçenekleri */
+html[data-theme="halloween"] [class*="ThemeSwitcher"] li,
+html[data-theme="halloween"] [class*="ThemeSwitcher"] button[role="menuitem"] {
+  color: #fca5a5 !important;
+  padding: 10px 15px !important;
+  border-radius: 6px !important;
+  margin-bottom: 2px !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Seçeneğin Üzerine Gelince (Hover) */
+html[data-theme="halloween"] [class*="ThemeSwitcher"] li:hover,
+html[data-theme="halloween"] [class*="ThemeSwitcher"] button[role="menuitem"]:hover {
+  background: rgba(153, 27, 27, 0.8) !important; /* Kan kırmızısı dolgu */
+  color: white !important;
+  padding-left: 20px !important; /* Küçük bir hayalet kayması */
+}
+/* ============================================================
+   SAHİR - VALENTINE'S DAY TEMASI (PEMBE & KIRMIZI)
+   ============================================================ */
+
+html[data-theme="valentines"] body {
+  background: 
+    linear-gradient(rgba(255, 245, 247, 0.8), rgba(255, 228, 232, 0.8)),
+    url('/valentines.png'); /* Görselin varsa */
+  background-size: cover;
+  background-attachment: fixed;
+  color: #c2185b !important;
+}
+
+/* Header Uyumu */
+html[data-theme="valentines"] header {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-bottom: 3px solid #ff85a2 !important;
+  box-shadow: 0 4px 20px rgba(255, 133, 162, 0.3) !important;
+}
+
+/* Linkler ve Logo */
+html[data-theme="valentines"] header .text-accent,
+html[data-theme="valentines"] header nav a:hover {
+  color: #ff4d6d !important;
+}
+
+/* Tema Seçme Kutusu (Dropdown) - Pembe Uyum */
+html[data-theme="valentines"] .bg-panel {
+  background: #fff0f3 !important;
+  border-color: #ffb3c1 !important;
+  box-shadow: 0 10px 40px rgba(255, 77, 109, 0.2) !important;
+}
+
+html[data-theme="valentines"] .text-muted {
+  color: #f06292 !important;
+}
+
+/* Aktif Seçenek ve Hover */
+html[data-theme="valentines"] .hover\:bg-card:hover,
+html[data-theme="valentines"] .bg-card {
+  background-color: #ffe4e8 !important;
+}
+
+/* Arama Çubuğu */
+html[data-theme="valentines"] input[type="search"] {
+  background: white !important;
+  border-color: #ffb3c1 !important;
+  color: #c2185b !important;
+}
+/* ============================================================
+   SAHİR - VALENTINE'S DAY GÖRSELLİ ROMANTİK TEMA
+   ============================================================ */
+
+html[data-theme="valentines"] body {
+  /* 
+    Fotoğrafın üzerine hafif pembe bir filtre atıyoruz. 
+    Bu, beyaz yazıların ve pembe detayların fotoğrafla karışmasını önler.
+  */
+  background: 
+    linear-gradient(rgba(255, 245, 247, 0.7), rgba(255, 228, 232, 0.7)),
+    url('/valentines.png');
+  
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* Sayfa kaysa da fotoğraf sabit kalır */
+  background-repeat: no-repeat;
+  color: #c2185b !important;
+}
+
+/* Header'ı da bu yumuşak havaya uyduralım */
+html[data-theme="valentines"] header {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+  border-bottom: 2px solid #ff85a2 !important;
+}
+/* ============================================================
+   SAHİR - VALENTINE'S DAY PATLAYAN KALPLER (INTRO)
+   ============================================================ */
+
+/* Kalp konteynırı sadece valentines temasında görünür */
+html[data-theme="valentines"] .heart-explosion-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* Tıklamayı engellemez */
+  z-index: 9999;
+  overflow: hidden;
+}
+
+/* Kalp parçacıkları */
+html[data-theme="valentines"] .heart-particle {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0;
+  animation: explode-heart 4s ease-out forwards;
+}
+
+/* Patlama Animasyonu */
+@keyframes explode-heart {
+  0% {
+    transform: translate(0, 0) scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    /* Kalpler rastgele yönlere dağılırken küçülür ve solar */
+    transform: translate(var(--tx), var(--ty)) scale(var(--s)) rotate(var(--r));
+    opacity: 0;
+  }
+}
+/* ============================================================
+   SAHİR - SİNEMATİK LOGO INTRO (SPLASH SCREEN)
+   ============================================================ */
+
+.logo-intro-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: #050505; /* Logonun arka planıyla tam uyumlu siyah */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000; /* Her şeyin üstünde */
+  animation: fade-out-overlay 0.5s ease forwards 2.5s; /* 2.5 sn sonra ekran kaybolur */
+}
+
+.intro-logo {
+  width: 300px; /* İlk başta büyük görünmesi için */
+  height: auto;
+  filter: blur(15px); /* İlk başta buğulu */
+  opacity: 0;
+  transform: scale(0.8);
+  animation: 
+    logo-appear 1s ease-out forwards, /* Belirme ve netleşme */
+    logo-shrink 1.5s ease-in-out forwards 1.5s; /* Küçülme efekti */
+}
+
+@keyframes logo-appear {
+  to {
+    filter: blur(0);
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes logo-shrink {
+  to {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out-overlay {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
