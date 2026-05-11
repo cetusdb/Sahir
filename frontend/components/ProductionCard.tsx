@@ -5,19 +5,19 @@ import type { ProductionListItem } from '@/lib/api';
 
 export default function ProductionCard({ p }: { p: ProductionListItem }) {
   return (
-    <Link 
+    <Link
       href={`/productions/${p.id}`}
       className="group block bg-[#0f172a] border border-white/5 rounded-xl overflow-hidden
-                 hover:border-accent/50 hover:shadow-[0_0_20px_rgba(251,191,36,0.15)] 
+                 hover:border-accent/50 hover:shadow-[0_0_20px_rgba(251,191,36,0.15)]
                  transition-all duration-500 transform hover:-translate-y-1"
     >
       <div className="aspect-[2/3] bg-[#020617] relative overflow-hidden">
         {p.posterUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img 
-            src={p.posterUrl} 
+          <img
+            src={p.posterUrl}
             alt={p.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center text-muted gap-2">
@@ -33,12 +33,12 @@ export default function ProductionCard({ p }: { p: ProductionListItem }) {
         </div>
 
         {/* SOL ÜST: TÜR (BUZLU CAM EFEKTİ) */}
-        <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md text-[10px] text-white/90 
+        <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md text-[10px] text-white/90
                         font-medium rounded-lg px-2 py-1 border border-white/10 uppercase tracking-wider">
           {p.type === 'TVShow' ? 'Dizi' : 'Film'}
         </div>
 
-        {/* ALT KISIMDAKİ SİYAH GEÇİŞ (Görünürlüğü artırır) */}
+        {/* ALT KISIMDAKİ SİYAH GEÇİŞ */}
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#020617] to-transparent opacity-80" />
       </div>
 
@@ -47,7 +47,7 @@ export default function ProductionCard({ p }: { p: ProductionListItem }) {
                        group-hover:text-accent transition-colors duration-300 min-h-[2.5rem]">
           {p.title}
         </h3>
-        
+
         <div className="text-[11px] text-muted-foreground mt-2 flex justify-between items-center opacity-80">
           <span className="bg-white/5 px-2 py-0.5 rounded text-white/70">{p.releaseYear}</span>
           {p.categoryName && (

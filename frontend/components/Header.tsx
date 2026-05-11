@@ -13,13 +13,12 @@ export default function Header() {
   const { theme } = useTheme();
   const [q, setQ] = useState('');
   const router = useRouter();
-  
+
   // Müzik kontrolü için referans
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // --- MÜZİK YÖNETİM SİSTEMİ ---
   useEffect(() => {
-    // Tema ve müzik dosyası eşleştirmeleri
     const themeSounds: Record<string, string> = {
       'valentines': '/valentines-bg.mp3',
       'halloween': '/halloween-bg.mp3',
@@ -29,13 +28,11 @@ export default function Header() {
     const currentSoundPath = themeSounds[theme];
 
     if (currentSoundPath) {
-      // Eğer zaten bir müzik objesi varsa ve kaynağı farklıysa eskisini temizle
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
 
-      // Yeni müzik objesini oluştur
       audioRef.current = new Audio(currentSoundPath);
       audioRef.current.loop = true;
       audioRef.current.volume = 0.4;
@@ -46,13 +43,11 @@ export default function Header() {
         });
       };
 
-      // İlk yüklemede ve etkileşim dinleyicileriyle çalmayı dene
       playAudio();
       window.addEventListener('click', playAudio, { once: true });
       window.addEventListener('scroll', playAudio, { once: true });
       window.addEventListener('keydown', playAudio, { once: true });
 
-      // Temizlik fonksiyonu: Etkinlik dinleyicilerini kaldır
       return () => {
         window.removeEventListener('click', playAudio);
         window.removeEventListener('scroll', playAudio);
@@ -63,7 +58,6 @@ export default function Header() {
         }
       };
     } else {
-      // Müzik tanımlanmamış temalarda (default vb.) çalmayı durdur
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
@@ -83,22 +77,22 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 backdrop-blur bg-bg/80 border-b border-border transition-all duration-300">
-      
+
       {/* VARSAYILAN TEMA: SABİT PARLAYAN YILDIZLAR */}
       {theme === 'default' && (
         <div className="star-container">
           {[...Array(50)].map((_, i) => {
-            const leftBase = (i / 50) * 100; 
+            const leftBase = (i / 50) * 100;
             return (
               <div
                 key={i}
                 className="star"
                 style={{
-                  left: `${leftBase + (Math.random() * 6 - 3)}vw`, 
+                  left: `${leftBase + (Math.random() * 6 - 3)}vw`,
                   top: `${Math.random() * 100}vh`,
-                  width: `${Math.random() * 10 + 12}px`, 
+                  width: `${Math.random() * 10 + 12}px`,
                   height: `${Math.random() * 10 + 12}px`,
-                  animationDelay: `${Math.random() * 5}s`, 
+                  animationDelay: `${Math.random() * 5}s`,
                   animationDuration: `${Math.random() * 2 + 3.5}s`
                 }}
               />
@@ -133,13 +127,13 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-4">
         {/* LOGO */}
         <Link href="/" className="flex items-center transition-transform hover:scale-105 active:scale-95">
-          <Image 
-            src="/sahirlogo.png.jpeg" 
-            alt="SAHIR Logo" 
-            width={70} 
-            height={70} 
+          <Image
+            src="/sahirlogo.png.jpeg"
+            alt="SAHIR Logo"
+            width={70}
+            height={70}
             className="object-contain"
-            priority 
+            priority
           />
         </Link>
 
@@ -148,10 +142,11 @@ export default function Header() {
           <Link href="/" className="hover:text-text transition-colors">Anasayfa</Link>
           <Link href="/categories" className="hover:text-text transition-colors">Kategoriler</Link>
           <Link href="/recommendations" className="hover:text-text transition-colors">Öneriler</Link>
+          {user && <Link href="/watched" className="hover:text-text transition-colors">İzlediklerim</Link>}
           {user && <Link href="/watchlists" className="hover:text-text transition-colors">Listelerim</Link>}
-          
+
           {user && <ThemeSwitcher />}
-          
+
           {(user?.role === 'Editor' || user?.role === 'Admin') && (
             <Link href="/editor" className="text-accent2 hover:text-accent2/80 font-semibold transition-colors">
               Editör
@@ -173,8 +168,8 @@ export default function Header() {
               onChange={(e) => setQ(e.target.value)}
               placeholder="Film veya dizi ara..."
               className="w-full bg-card border border-border rounded-lg px-4 py-2 text-sm
-                         placeholder-muted focus:outline-none focus:border-accent 
-                         focus:ring-1 focus:ring-accent/30 transition-all" 
+                         placeholder-muted focus:outline-none focus:border-accent
+                         focus:ring-1 focus:ring-accent/30 transition-all"
             />
           </div>
         </form>

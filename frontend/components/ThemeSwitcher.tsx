@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTheme, type Theme } from '@/lib/theme-context';
 
-type Item = { id: Theme; label: string; emoji: string; desc: string };
+type Item = { id: Theme; label: string; emoji: string; desc?: string };
 
 const themes: Item[] = [
-  { id: 'default',   label: 'Varsayılan', emoji: '🎬'  },
-  { id: 'christmas', label: 'Christmas',  emoji: '🎄'  },
-  { id: 'halloween', label: 'Halloween',  emoji: '🎃'  },
-  { id: 'valentines', label: 'Valentine\'s Day', emoji: '💖' } 
+  { id: 'default',    label: 'Varsayılan',         emoji: '🎬' },
+  { id: 'christmas',  label: 'Christmas',          emoji: '🎄' },
+  { id: 'halloween',  label: 'Halloween',          emoji: '🎃' },
+  { id: 'valentines', label: "Valentine's Day",    emoji: '💖' }
 ];
 
 export default function ThemeSwitcher() {
@@ -60,7 +60,7 @@ export default function ThemeSwitcher() {
                   <div className={`font-semibold ${active ? 'text-accent' : ''}`}>
                     {t.label}
                   </div>
-                  <div className="text-xs text-muted">{t.desc}</div>
+                  {t.desc && <div className="text-xs text-muted">{t.desc}</div>}
                 </div>
                 {active && <span className="text-accent text-sm">✓</span>}
               </button>

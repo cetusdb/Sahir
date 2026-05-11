@@ -64,12 +64,19 @@ export type ProductionUpsert = {
 
 export type Comment = {
   id: number; userId: number; username: string; avatarUrl?: string | null;
-  productionId: number; body: string; likeCount: number; createdAt: string;
+  productionId: number; parentCommentId: number | null;
+  body: string; isSpoiler: boolean;
+  likeCount: number; createdAt: string;
 };
 
 export type Watchlist = {
   id: number; name: string; description?: string | null;
   isPublic: boolean; createdAt: string; itemCount: number;
+};
+
+export type WatchHistoryItem = {
+  production: ProductionListItem;
+  watchedAt: string;
 };
 
 export type WatchlistDetail = {
@@ -197,11 +204,15 @@ export const api = {
 
   // Comments
   comments:    (productionId: number) => http<Comment[]>(`/api/comments/${productionId}`),
-  addComment:  (productionId: number, body: string) =>
+  addComment:  (productionId: number, body: string, isSpoiler = false,
+                parentCommentId: number | null = null) =>
     http<Comment>('/api/comments',
-      { method: 'POST', body: JSON.stringify({ productionId, body }) }),
+      { method: 'POST',
+        body: JSON.stringify({ productionId, body, isSpoiler, parentCommentId }) }),
   likeComment: (id: number) =>
     http<{ id: number; likeCount: number }>(`/api/comments/${id}/like`, { method: 'POST' }),
+  deleteComment: (id: number) =>
+    http(`/api/comments/${id}`, { method: 'DELETE' }),
 
   // Watchlists
   myWatchlists:  () => http<Watchlist[]>('/api/watchlists'),
@@ -211,12 +222,25 @@ export const api = {
   addToWatchlist: (watchlistId: number, productionId: number) =>
     http('/api/watchlists/items',
       { method: 'POST', body: JSON.stringify({ watchlistId, productionId }) }),
+  removeFromWatchlist: (watchlistId: number, productionId: number) =>
+    http(`/api/watchlists/${watchlistId}/items/${productionId}`, { method: 'DELETE' }),
+  deleteWatchlist: (id: number) =>
+    http(`/api/watchlists/${id}`, { method: 'DELETE' }),
   markWatched:    (productionId: number) =>
     http(`/api/watchlists/history/${productionId}`, { method: 'POST' }),
+  watchHistory:   () =>
+    http<WatchHistoryItem[]>('/api/watchlists/history'),
+  removeFromHistory: (productionId: number) =>
+    http(`/api/watchlists/history/${productionId}`, { method: 'DELETE' }),
 
   // Recommendations
   recommendations: (take = 12) =>
     http<ProductionListItem[]>(`/api/recommendations?take=${take}`),
+  aiRecommendations: (prefs: AIPreferences | null, take = 12) =>
+    http<AIRecommendationResult>(`/api/recommendations/ai?take=${take}`, {
+      method: 'POST',
+      body: JSON.stringify(prefs ?? {})
+    }),
 
   // Admin
   adminUsers:      (q?: string) => {
@@ -261,10 +285,25 @@ export type AdminStats = {
   totalComments: number; totalWatchlists: number;
 };
 
+export type AIPreferences = {
+  genres?: string[];
+  mood?:   string;
+  era?:    string;
+};
+
+export type AIRecommendationResult = {
+  items: ProductionListItem[];
+  reason?: string | null;
+  coldStart: boolean;
+  requiresPreferences?: boolean;
+  message?: string;
+};
+
 export type AdminComment = {
   id: number;
   userId: number; username: string;
   productionId: number; productionTitle: string;
-  body: string; likeCount: number;
+  body: string; isSpoiler: boolean;
+  likeCount: number;
   createdAt: string;
 };

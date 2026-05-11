@@ -139,6 +139,50 @@ public class WatchlistsController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Kullanıcının izlediği yapımları döner (en son izlenen üstte).</summary>
+    [HttpGet("history")]
+    public async Task<IActionResult> GetHistory()
+    {
+        var userId = CurrentUserId();
+        if (userId is null) return Unauthorized();
+
+        var items = await _db.WatchHistory.AsNoTracking()
+            .Where(h => h.UserId == userId)
+            .Include(h => h.Production!).ThenInclude(p => p.Category)
+            .Include(h => h.Production!).ThenInclude(p => p.Ratings)
+            .OrderByDescending(h => h.WatchedAt)
+            .Select(h => new
+            {
+                production = new ProductionListItemDto(
+                    h.Production!.Id, h.Production.Title, h.Production.Type.ToString(),
+                    h.Production.ReleaseYear, h.Production.PosterUrl,
+                    h.Production.Ratings.Any()
+                        ? Math.Round(h.Production.Ratings.Average(r => (double)r.Score), 1) : 0,
+                    h.Production.Ratings.Count,
+                    h.Production.Category != null ? h.Production.Category.Name : null),
+                watchedAt = h.WatchedAt
+            })
+            .ToListAsync();
+
+        return Ok(items);
+    }
+
+    /// <summary>İzlediklerinden bir yapımı çıkar.</summary>
+    [HttpDelete("history/{productionId:int}")]
+    public async Task<IActionResult> RemoveFromHistory(int productionId)
+    {
+        var userId = CurrentUserId();
+        if (userId is null) return Unauthorized();
+
+        var entry = await _db.WatchHistory.FirstOrDefaultAsync(h =>
+            h.UserId == userId && h.ProductionId == productionId);
+        if (entry is null) return NotFound();
+
+        _db.WatchHistory.Remove(entry);
+        await _db.SaveChangesAsync();
+        return NoContent();
+    }
+
     /// <summary>İzleme geçmişine yapım ekle (öneri motoru girdisi).</summary>
     [HttpPost("history/{productionId:int}")]
     public async Task<IActionResult> MarkAsWatched(int productionId)

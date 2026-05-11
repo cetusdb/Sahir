@@ -20,11 +20,11 @@ export default function HomePage() {
 
   useEffect(() => {
     Promise.all([
-      api.productions({ sort: 'popular', pageSize: 30 }),
-      api.productions({ sort: 'rating',  pageSize: 30 }),
-      api.productions({ sort: 'newest',  pageSize: 30 }),
-      api.productions({ sort: 'popular', type: 'Movie',  pageSize: 30 }),
-      api.productions({ sort: 'popular', type: 'TVShow', pageSize: 30 })
+      api.productions({ sort: 'popular', pageSize: 100 }),
+      api.productions({ sort: 'rating',  pageSize: 100 }),
+      api.productions({ sort: 'newest',  pageSize: 100 }),
+      api.productions({ sort: 'popular', type: 'Movie',  pageSize: 100 }),
+      api.productions({ sort: 'popular', type: 'TVShow', pageSize: 100 })
     ])
       .then(([popular, top, newest, movies, shows]) => {
         setTrending(popular.items.slice(0, 5));

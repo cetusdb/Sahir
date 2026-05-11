@@ -6,6 +6,7 @@ namespace SahirAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Editor,Admin")]
+[ApiExplorerSettings(IgnoreApi = true)]   // Swagger bu controller'ı yoksaysın
 public class UploadsController : ControllerBase
 {
     private readonly IWebHostEnvironment _env;
@@ -14,13 +15,9 @@ public class UploadsController : ControllerBase
 
     public UploadsController(IWebHostEnvironment env) => _env = env;
 
-    /// <summary>
-    /// Görsel yükle. Multipart/form-data ile gelen "file" alanı.
-    /// Dönen URL doğrudan PosterUrl alanına yazılabilir.
-    /// </summary>
     [HttpPost("image")]
     [RequestSizeLimit(MaxBytes)]
-    public async Task<IActionResult> UploadImage([FromForm] IFormFile file)
+    public async Task<IActionResult> UploadImage(IFormFile file)
     {
         if (file is null || file.Length == 0)
             return BadRequest(new { message = "Dosya seçilmedi." });
@@ -35,7 +32,6 @@ public class UploadsController : ControllerBase
                 message = $"Geçersiz uzantı. İzin verilenler: {string.Join(", ", AllowedExt)}"
             });
 
-        // wwwroot/uploads/posters klasörü — ContentRootPath her zaman set edilir
         var webRoot = _env.WebRootPath
             ?? Path.Combine(_env.ContentRootPath, "wwwroot");
         var folder = Path.Combine(webRoot, "uploads", "posters");

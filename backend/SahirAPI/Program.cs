@@ -46,6 +46,7 @@ builder.Services.AddAuthorization();
 // ---------------------------------------------------------------------
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRecommendationService, RecommendationService>();
+builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 
 // ---------------------------------------------------------------------
 // CORS - Next.js

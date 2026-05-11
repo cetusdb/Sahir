@@ -57,6 +57,8 @@ public class ApplicationDbContext : DbContext
              .OnDelete(DeleteBehavior.SetNull);
 
             // M:N Production - Genre
+            // SQL şemasındaki sütun adlarına (ProductionId / GenreId) açıkça bağlıyoruz;
+            // aksi halde EF Core "ProductionsId / GenresId" arar.
             e.HasMany(p => p.Genres)
              .WithMany(g => g.Productions)
              .UsingEntity<Dictionary<string, object>>(
@@ -102,6 +104,11 @@ public class ApplicationDbContext : DbContext
             e.HasOne(c => c.Production)
              .WithMany(p => p.Comments)
              .HasForeignKey(c => c.ProductionId)
+             .OnDelete(DeleteBehavior.Cascade);
+            // Self-reference: yorum bir başka yoruma cevap olabilir
+            e.HasOne(c => c.ParentComment)
+             .WithMany(c => c.Replies)
+             .HasForeignKey(c => c.ParentCommentId)
              .OnDelete(DeleteBehavior.Cascade);
         });
 

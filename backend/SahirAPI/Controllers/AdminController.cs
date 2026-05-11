@@ -117,7 +117,7 @@ public class AdminController : ControllerBase
                 c.Id,
                 c.UserId, c.User!.Username,
                 c.ProductionId, c.Production!.Title,
-                c.Body, c.LikeCount, c.CreatedAt))
+                c.Body, c.IsSpoiler, c.LikeCount, c.CreatedAt))
             .ToListAsync();
 
         return Ok(new { total, page, pageSize, items });

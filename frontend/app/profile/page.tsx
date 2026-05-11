@@ -2,17 +2,21 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { getUser, type Watchlist, api } from '@/lib/api';
+import { api, type Watchlist, type WatchHistoryItem } from '@/lib/api';
+import { useAuth } from '@/lib/auth-context';
 
 export default function ProfilePage() {
-  const user = typeof window !== 'undefined' ? getUser() : null;
+  const { user, ready } = useAuth();
   const [lists, setLists] = useState<Watchlist[]>([]);
+  const [watched, setWatched] = useState<WatchHistoryItem[]>([]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!ready || !user) return;
     api.myWatchlists().then(setLists).catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    api.watchHistory().then(setWatched).catch(() => {});
+  }, [ready, user]);
+
+  if (!ready) return <div className="text-muted">Yükleniyor...</div>;
 
   if (!user) {
     return (
@@ -37,6 +41,24 @@ export default function ProfilePage() {
           <h1 className="text-2xl font-bold">{user.username}</h1>
           <p className="text-sm text-muted">Rol: {user.role}</p>
         </div>
+      </section>
+
+      <section className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <Link href="/watched"
+          className="bg-card border border-border rounded-xl p-4 hover:border-accent">
+          <div className="text-xs text-muted uppercase">İzlediklerim</div>
+          <div className="text-2xl font-bold mt-1">{watched.length}</div>
+        </Link>
+        <Link href="/watchlists"
+          className="bg-card border border-border rounded-xl p-4 hover:border-accent">
+          <div className="text-xs text-muted uppercase">Listelerim</div>
+          <div className="text-2xl font-bold mt-1">{lists.length}</div>
+        </Link>
+        <Link href="/recommendations"
+          className="bg-card border border-border rounded-xl p-4 hover:border-accent">
+          <div className="text-xs text-muted uppercase">Öneriler</div>
+          <div className="text-sm mt-1">Sana özel</div>
+        </Link>
       </section>
 
       <section className="mt-8">

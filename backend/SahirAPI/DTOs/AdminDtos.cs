@@ -22,5 +22,6 @@ public record AdminCommentDto(
     int UserId, string Username,
     int ProductionId, string ProductionTitle,
     string Body,
+    bool IsSpoiler,
     int LikeCount,
     DateTime CreatedAt);

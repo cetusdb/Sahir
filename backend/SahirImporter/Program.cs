@@ -43,6 +43,29 @@ internal class Program
 
     private static async Task<int> Main(string[] args)
     {
+        // "fill-posters" alt-komutu: postersiz filmleri TMDB'den doldurur
+        if (args.Length > 0 && args[0] == "fill-posters")
+        {
+            var pwd      = GetArgValue(args, "--password");
+            var tmdbKey  = GetArgValue(args, "--tmdb-key");
+            var limitArg = GetArgValue(args, "--limit");
+            var host     = GetArgValue(args, "--host") ?? "localhost";
+            var port     = int.Parse(GetArgValue(args, "--port") ?? "3306");
+            var user     = GetArgValue(args, "--user") ?? "root";
+            var db       = GetArgValue(args, "--db")   ?? "sahir_db";
+
+            if (pwd is null || tmdbKey is null)
+            {
+                Console.WriteLine("Kullanım:");
+                Console.WriteLine("  dotnet run -- fill-posters --password <SIFRE> --tmdb-key <TMDB_API_KEY> [--limit 100]");
+                return 1;
+            }
+            var fillConn = $"Server={host};Port={port};Database={db};User={user};Password={pwd};";
+            int? limit = int.TryParse(limitArg, out var l) ? l : null;
+            await PosterFiller.RunAsync(fillConn, tmdbKey, limit);
+            return 0;
+        }
+
         var opts = ParseArgs(args);
         if (opts is null) return 1;
 
@@ -330,6 +353,13 @@ SELECT LAST_INSERT_ID();";
     private record Options(
         string CsvPath, string Password,
         string Host, int Port, string User, string Database, int Limit);
+
+    private static string? GetArgValue(string[] args, string key)
+    {
+        for (int i = 0; i < args.Length - 1; i++)
+            if (args[i] == key) return args[i + 1];
+        return null;
+    }
 
     private static Options? ParseArgs(string[] args)
     {

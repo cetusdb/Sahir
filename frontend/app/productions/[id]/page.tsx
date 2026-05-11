@@ -8,6 +8,8 @@ import {
   type Comment, type ProductionDetail, type Watchlist
 } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { useUI } from '@/lib/ui-context';
+import CommentItem, { type CommentNode } from '@/components/CommentItem';
 
 export default function ProductionDetailPage() {
   const params = useParams<{ id: string }>();
@@ -17,6 +19,9 @@ export default function ProductionDetailPage() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [myScore, setMyScore] = useState<number | null>(null);
   const [body, setBody] = useState('');
+  const [isSpoiler, setIsSpoiler] = useState(false);
+  const [revealedSpoilers, setRevealedSpoilers] = useState<Set<number>>(new Set());
+  const [likedComments, setLikedComments] = useState<Set<number>>(new Set());
   const [err, setErr] = useState<string | null>(null);
 
   // Watchlist seçimi
@@ -25,6 +30,7 @@ export default function ProductionDetailPage() {
   const [newListName, setNewListName] = useState('');
 
   const { user } = useAuth();
+  const { toast, confirm } = useUI();
 
   useEffect(() => {
     api.production(id).then(setP).catch((e) => setErr(e.message));
@@ -37,31 +43,80 @@ export default function ProductionDetailPage() {
   }, [id]);
 
   async function submitRating(score: number) {
-    try { await api.rate(id, score); setMyScore(score); }
-    catch (e: any) { alert('Puan verilemedi: ' + e.message); }
+    try {
+      await api.rate(id, score);
+      setMyScore(score);
+      toast(`${score}/10 puan kaydedildi`, 'success');
+    }
+    catch (e: any) { toast('Puan verilemedi: ' + e.message, 'error'); }
   }
 
   async function submitComment(e: React.FormEvent) {
     e.preventDefault();
     if (!body.trim()) return;
     try {
-      const c = await api.addComment(id, body.trim());
+      const c = await api.addComment(id, body.trim(), isSpoiler);
       setComments([c, ...comments]);
       setBody('');
-    } catch (e: any) { alert('Yorum gönderilemedi: ' + e.message); }
+      setIsSpoiler(false);
+      toast('Yorumun yayınlandı', 'success');
+    } catch (e: any) { toast('Yorum gönderilemedi: ' + e.message, 'error'); }
+  }
+
+  async function likeComment(commentId: number) {
+    if (likedComments.has(commentId)) return;
+    try {
+      const r = await api.likeComment(commentId);
+      setComments(comments.map((c) =>
+        c.id === commentId ? { ...c, likeCount: r.likeCount } : c
+      ));
+      setLikedComments(new Set(likedComments).add(commentId));
+    } catch (e: any) { toast('Beğeni başarısız: ' + e.message, 'error'); }
+  }
+
+  async function revealSpoiler(commentId: number) {
+    const ok = await confirm({
+      title: 'Spoiler içeriyor',
+      message: 'Bu yorum spoiler içeriyor. Görmek istediğine emin misin?',
+      confirmText: 'Yine de göster',
+      cancelText: 'Vazgeç'
+    });
+    if (!ok) return;
+    const next = new Set(revealedSpoilers);
+    next.add(commentId);
+    setRevealedSpoilers(next);
   }
 
   async function markWatched() {
-    try { await api.markWatched(id); alert('İzlendi olarak işaretlendi.'); }
-    catch (e: any) { alert(e.message); }
+    try {
+      await api.markWatched(id);
+      toast('İzlendi olarak işaretlendi', 'success');
+    }
+    catch (e: any) { toast(e.message, 'error'); }
   }
 
   async function addToList(watchlistId: number) {
     try {
       await api.addToWatchlist(watchlistId, id);
-      alert('Listeye eklendi.');
+      toast('Listeye eklendi', 'success');
       setShowListPicker(false);
-    } catch (e: any) { alert(e.message); }
+    } catch (e: any) { toast(e.message, 'error'); }
+  }
+
+  async function deleteThisProduction() {
+    if (!p) return;
+    const ok = await confirm({
+      title: 'Yapımı sil',
+      message: `"${p.title}" yapımını silmek istediğine emin misin?\n\nBu işlem ilgili tüm puanları, yorumları ve liste girişlerini de siler ve geri alınamaz.`,
+      confirmText: 'Sil',
+      destructive: true
+    });
+    if (!ok) return;
+    try {
+      await api.deleteProduction(id);
+      toast('Yapım silindi', 'success');
+      setTimeout(() => { window.location.href = '/'; }, 800);
+    } catch (e: any) { toast('Hata: ' + e.message, 'error'); }
   }
 
   async function createListAndAdd() {
@@ -70,10 +125,10 @@ export default function ProductionDetailPage() {
       const w = await api.createWatchlist({ name: newListName.trim() });
       setLists([w, ...lists]);
       await api.addToWatchlist(w.id, id);
-      alert('Yeni liste oluşturuldu ve yapım eklendi.');
+      toast(`"${w.name}" oluşturuldu ve eklendi`, 'success');
       setNewListName('');
       setShowListPicker(false);
-    } catch (e: any) { alert(e.message); }
+    } catch (e: any) { toast(e.message, 'error'); }
   }
 
   if (err) return <div className="text-red-400">Hata: {err}</div>;
@@ -160,6 +215,20 @@ export default function ProductionDetailPage() {
                   className="px-4 py-2 rounded-md bg-accent text-black font-semibold text-sm">
                   + Listeye Ekle
                 </button>
+                {(user.role === 'Editor' || user.role === 'Admin') && (
+                  <Link href={`/editor/productions/${id}/edit`}
+                    className="px-4 py-2 rounded-md border border-accent2
+                               text-accent2 hover:bg-card text-sm">
+                    ✎ Düzenle
+                  </Link>
+                )}
+                {(user.role === 'Editor' || user.role === 'Admin') && (
+                  <button onClick={deleteThisProduction}
+                    className="px-4 py-2 rounded-md border border-red-500/40
+                               text-red-400 hover:bg-red-500/10 text-sm">
+                    🗑 Sil
+                  </button>
+                )}
               </div>
 
               {/* Liste seçici */}
@@ -217,11 +286,25 @@ export default function ProductionDetailPage() {
               rows={3} placeholder="Bu yapım hakkında ne düşünüyorsun?"
               className="w-full bg-card border border-border rounded-md px-3 py-2
                          focus:outline-none focus:border-accent" />
-            <div className="text-right mt-2">
+            <div className="flex items-center justify-between mt-2 gap-2 flex-wrap">
+              <button type="button"
+                onClick={() => setIsSpoiler(!isSpoiler)}
+                className={`text-xs px-3 py-1.5 rounded-full border transition-colors
+                           ${isSpoiler
+                             ? 'bg-red-500/20 border-red-500 text-red-300'
+                             : 'border-border text-muted hover:bg-card'}`}>
+                {isSpoiler ? '⚠ Spoiler içerir (aktif)' : '⚠ Spoiler içerir mi?'}
+              </button>
               <button className="px-4 py-1.5 bg-accent text-black rounded-md font-semibold">
                 Gönder
               </button>
             </div>
+            {isSpoiler && (
+              <p className="text-xs text-red-300 mt-2">
+                Bu yorum spoiler etiketiyle paylaşılacak; diğer kullanıcılara
+                "spoiler içeriyor" uyarısıyla gösterilecek, açmak için onay isteyecek.
+              </p>
+            )}
           </form>
         )}
 
@@ -229,36 +312,25 @@ export default function ProductionDetailPage() {
           {comments.length === 0 && (
             <div className="text-muted">Henüz yorum yok. İlk yorumu sen yaz.</div>
           )}
-          {comments.map((c) => (
-            <article key={c.id}
-              className="bg-card border border-border rounded-lg p-4">
-              <header className="flex justify-between items-center">
-                <span className="font-semibold">{c.username}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted">
-                    {new Date(c.createdAt).toLocaleString('tr-TR')}
-                  </span>
-                  {user?.role === 'Admin' && (
-                    <button
-                      onClick={async () => {
-                        if (!confirm('Bu yorumu silmek istediğine emin misin?')) return;
-                        try {
-                          await api.adminDeleteComment(c.id);
-                          setComments(comments.filter((x) => x.id !== c.id));
-                        } catch (e: any) { alert('Hata: ' + e.message); }
-                      }}
-                      className="text-xs px-2 py-0.5 rounded border border-red-500/40
-                                 text-red-400 hover:bg-red-500/10">
-                      Sil
-                    </button>
-                  )}
-                </div>
-              </header>
-              <p className="mt-2 leading-relaxed">{c.body}</p>
-              <footer className="mt-2 text-xs text-muted">
-                ❤ {c.likeCount} beğeni
-              </footer>
-            </article>
+          {buildCommentTree(comments).map((root) => (
+            <CommentItem
+              key={root.id}
+              node={root}
+              depth={0}
+              onAdd={(c) => {
+                setComments([...comments, c]);
+                toast('Yanıt eklendi', 'success');
+              }}
+              onDelete={(deletedId) => {
+                setComments(comments.filter((x) =>
+                  x.id !== deletedId && x.parentCommentId !== deletedId));
+                toast('Yorum silindi', 'success');
+              }}
+              onLike={likeComment}
+              liked={likedComments}
+              revealed={revealedSpoilers}
+              onReveal={revealSpoiler}
+            />
           ))}
         </div>
       </section>
@@ -273,4 +345,40 @@ function Info({ label, value }: { label: string; value: string }) {
       <dd>{value}</dd>
     </div>
   );
+}
+
+/**
+ * Düz yorum listesini parent-child ağacına çevirir.
+ * En yeni yorumlar üstte, yanıtlar kronolojik (eskiden yeniye) sıralanır.
+ */
+function buildCommentTree(flat: Comment[]): CommentNode[] {
+  const map = new Map<number, CommentNode>();
+  const roots: CommentNode[] = [];
+
+  // Önce tüm node'ları map'e koy
+  flat.forEach((c) => map.set(c.id, { ...c, replies: [] }));
+
+  // Sonra parent-child ilişkisini kur
+  flat.forEach((c) => {
+    const node = map.get(c.id)!;
+    if (c.parentCommentId && map.has(c.parentCommentId)) {
+      map.get(c.parentCommentId)!.replies.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+
+  // Kök yorumlar: en yeni en üstte
+  roots.sort((a, b) =>
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  // Yanıtlar: eskiden yeniye (sohbet akışı)
+  const sortReplies = (n: CommentNode) => {
+    n.replies.sort((a, b) =>
+      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    n.replies.forEach(sortReplies);
+  };
+  roots.forEach(sortReplies);
+
+  return roots;
 }

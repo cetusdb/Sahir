@@ -25,7 +25,8 @@ public class CommentsController : ControllerBase
             .OrderByDescending(c => c.CreatedAt)
             .Select(c => new CommentDto(
                 c.Id, c.UserId, c.User!.Username, c.User.AvatarUrl,
-                c.ProductionId, c.Body, c.LikeCount, c.CreatedAt))
+                c.ProductionId, c.ParentCommentId,
+                c.Body, c.IsSpoiler, c.LikeCount, c.CreatedAt))
             .ToListAsync();
         return Ok(list);
     }
@@ -44,11 +45,24 @@ public class CommentsController : ControllerBase
         if (!await _db.Productions.AnyAsync(p => p.Id == dto.ProductionId))
             return NotFound(new { message = "Yapım bulunamadı." });
 
+        // Parent kontrolü: cevap veriliyorsa parent aynı yapımda olmalı
+        if (dto.ParentCommentId.HasValue)
+        {
+            var parent = await _db.Comments.AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == dto.ParentCommentId.Value);
+            if (parent is null)
+                return NotFound(new { message = "Yanıtlanacak yorum bulunamadı." });
+            if (parent.ProductionId != dto.ProductionId)
+                return BadRequest(new { message = "Yanıtlanan yorum farklı bir yapıma ait." });
+        }
+
         var c = new Comment
         {
             UserId = userId.Value,
             ProductionId = dto.ProductionId,
-            Body = dto.Body.Trim()
+            ParentCommentId = dto.ParentCommentId,
+            Body = dto.Body.Trim(),
+            IsSpoiler = dto.IsSpoiler
         };
         _db.Comments.Add(c);
         await _db.SaveChangesAsync();
@@ -56,7 +70,8 @@ public class CommentsController : ControllerBase
         var u = await _db.Users.FindAsync(userId.Value);
         return Ok(new CommentDto(
             c.Id, c.UserId, u!.Username, u.AvatarUrl,
-            c.ProductionId, c.Body, c.LikeCount, c.CreatedAt));
+            c.ProductionId, c.ParentCommentId,
+            c.Body, c.IsSpoiler, c.LikeCount, c.CreatedAt));
     }
 
     [HttpPost("{id:int}/like")]

@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAuth } from './auth-context';
 
-export type Theme = 'default' | 'christmas' | 'halloween';
+export type Theme = 'default' | 'christmas' | 'halloween' | 'valentines';
 
 const STORAGE_PREFIX = 'sahir_theme';
 

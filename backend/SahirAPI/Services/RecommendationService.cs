@@ -15,8 +15,6 @@ public interface IRecommendationService
 ///   2) Bu yapımların türlerine ağırlık verir (yüksek puan = daha çok ağırlık).
 ///   3) Henüz izlenmemiş yapımları, tür eşleşmesi + ortalama puana göre skorlar.
 ///   4) En yüksek skorlu yapımları döner.
-///
-/// Bu, klasik "content-based filtering" yaklaşımının kompakt bir gerçeklenmesidir.
 /// </summary>
 public class RecommendationService : IRecommendationService
 {
@@ -66,10 +64,8 @@ public class RecommendationService : IRecommendationService
         var genreWeights = new Dictionary<int, double>();
         foreach (var item in seenWithGenres)
         {
-            // Puanlanmadıysa nötr ağırlık (5.0/10), yoksa kullanıcının verdiği puan
             var w = ratingMap.TryGetValue(item.Id, out var s) ? s : 5.0;
-            // Yüksek puanlar (7+) öne çıksın, düşük puanlar negatif sinyal versin
-            var contribution = (w - 5.0) / 5.0;   // -0.8 .. +1.0
+            var contribution = (w - 5.0) / 5.0;
             foreach (var gid in item.GenreIds)
             {
                 if (!genreWeights.ContainsKey(gid)) genreWeights[gid] = 0;
@@ -77,7 +73,7 @@ public class RecommendationService : IRecommendationService
             }
         }
 
-        // ---- 3) Aday yapımlar: kullanıcının izlemediği/puanlamadığı tüm yapımlar ----
+        // ---- 3) Aday yapımlar ----
         var candidates = await _db.Productions.AsNoTracking()
             .Include(p => p.Category)
             .Include(p => p.Ratings)
@@ -97,12 +93,10 @@ public class RecommendationService : IRecommendationService
                 foreach (var g in p.Genres)
                     if (genreWeights.TryGetValue(g.Id, out var w)) genreScore += w;
 
-                // Bayes-benzeri yumuşatma: az oylu yapımlar globalin etkisinde kalsın
-                const double C = 5.0;        // küçük yumuşatma sabiti
-                const double m = 6.5;        // varsayılan global ortalama
+                const double C = 5.0;
+                const double m = 6.5;
                 var smoothedAvg = (C * m + avg * ratingCount) / (C + ratingCount);
 
-                // Birleşik skor: tür eşleşmesi + kalite
                 var finalScore = (genreScore * 1.5) + smoothedAvg;
 
                 return new { Production = p, Score = finalScore, Avg = avg, ratingCount };

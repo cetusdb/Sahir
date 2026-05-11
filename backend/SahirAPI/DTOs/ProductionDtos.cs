@@ -40,11 +40,14 @@ public record RatingDto(
 
 public record CommentCreateDto(
     [Required] int ProductionId,
-    [Required, MinLength(1), MaxLength(2000)] string Body);
+    [Required, MinLength(1), MaxLength(2000)] string Body,
+    bool IsSpoiler = false,
+    int? ParentCommentId = null);
 
 public record CommentDto(
     int Id, int UserId, string Username, string? AvatarUrl,
-    int ProductionId, string Body, int LikeCount, DateTime CreatedAt);
+    int ProductionId, int? ParentCommentId,
+    string Body, bool IsSpoiler, int LikeCount, DateTime CreatedAt);
 
 public record WatchlistDto(
     int Id, string Name, string? Description, bool IsPublic,
